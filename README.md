@@ -18,91 +18,90 @@ This project demonstrates the implementation of a Library Management System usin
 ### 1. Database Setup
 ![ERD](https://github.com/Venom3150/Library_Management_System_Using_SQL/blob/main/Library_system_erd.png)
 
-- **Database Creation**: Created a database named `library_db`.
+- **Database Creation**: Created a database named `library_management_project2`.
 - **Table Creation**: Created tables for branches, employees, members, books, issued status, and return status. Each table includes relevant columns and relationships.
 
 ```sql
-CREATE DATABASE library_db;
+DROP TABLE IF EXISTS books;
+CREATE TABLE books
+(isbn	VARCHAR(20) PRIMARY KEY,
+book_title VARCHAR(75),
+category VARCHAR(25),	
+rental_price FLOAT,
+`status` VARCHAR(10),
+author VARCHAR(40),
+publisher VARCHAR(45)
+);
 
 DROP TABLE IF EXISTS branch;
 CREATE TABLE branch
-(
-            branch_id VARCHAR(10) PRIMARY KEY,
-            manager_id VARCHAR(10),
-            branch_address VARCHAR(30),
-            contact_no VARCHAR(15)
-);
+(branch_id VARCHAR(15) PRIMARY KEY , 
+ manager_id	VARCHAR(15), 
+ branch_address VARCHAR(50),
+ contact_no VARCHAR(15)
+ );
 
 
--- Create table "Employee"
-DROP TABLE IF EXISTS employees;
 CREATE TABLE employees
-(
-            emp_id VARCHAR(10) PRIMARY KEY,
-            emp_name VARCHAR(30),
-            position VARCHAR(30),
-            salary DECIMAL(10,2),
-            branch_id VARCHAR(10),
-            FOREIGN KEY (branch_id) REFERENCES  branch(branch_id)
+(emp_id VARCHAR(15) PRIMARY KEY, 
+emp_name VARCHAR(50),
+position VARCHAR(25), 	
+salary int, 
+branch_id VARCHAR(15) 
 );
 
 
--- Create table "Members"
-DROP TABLE IF EXISTS members;
-CREATE TABLE members
-(
-            member_id VARCHAR(10) PRIMARY KEY,
-            member_name VARCHAR(30),
-            member_address VARCHAR(30),
-            reg_date DATE
-);
-
-
-
--- Create table "Books"
-DROP TABLE IF EXISTS books;
-CREATE TABLE books
-(
-            isbn VARCHAR(50) PRIMARY KEY,
-            book_title VARCHAR(80),
-            category VARCHAR(30),
-            rental_price DECIMAL(10,2),
-            status VARCHAR(10),
-            author VARCHAR(30),
-            publisher VARCHAR(30)
-);
-
-
-
--- Create table "IssueStatus"
-DROP TABLE IF EXISTS issued_status;
 CREATE TABLE issued_status
-(
-            issued_id VARCHAR(10) PRIMARY KEY,
-            issued_member_id VARCHAR(30),
-            issued_book_name VARCHAR(80),
-            issued_date DATE,
-            issued_book_isbn VARCHAR(50),
-            issued_emp_id VARCHAR(10),
-            FOREIGN KEY (issued_member_id) REFERENCES members(member_id),
-            FOREIGN KEY (issued_emp_id) REFERENCES employees(emp_id),
-            FOREIGN KEY (issued_book_isbn) REFERENCES books(isbn) 
+(issued_id VARCHAR(15) PRIMARY KEY, 
+issued_member_id VARCHAR(15),
+issued_book_name VARCHAR(75), 	
+issued_date	DATE, 
+issued_book_isbn VARCHAR(20), 
+issued_emp_id VARCHAR(15)
 );
 
+CREATE TABLE members
+(member_id VARCHAR(15) PRIMARY KEY, 
+member_name VARCHAR(50), 
+member_address VARCHAR(50), 	
+reg_date DATE
+);
 
-
--- Create table "ReturnStatus"
-DROP TABLE IF EXISTS return_status;
 CREATE TABLE return_status
-(
-            return_id VARCHAR(10) PRIMARY KEY,
-            issued_id VARCHAR(30),
-            return_book_name VARCHAR(80),
-            return_date DATE,
-            return_book_isbn VARCHAR(50),
-            FOREIGN KEY (return_book_isbn) REFERENCES books(isbn)
-);
+(return_id VARCHAR(15) PRIMARY KEY,
+ issued_id VARCHAR(15),	
+ return_book_name VARCHAR(75),	
+ return_date DATE,	
+ return_book_isbn VARCHAR(20)
+ );
 
+
+-- ASSIGNING FOREIGN KEYS to issued_status
+
+ALTER TABLE issued_status
+ADD CONSTRAINT fk_members 
+FOREIGN KEY (issued_member_id)
+REFERENCES members(member_id);
+
+ALTER TABLE issued_status
+ADD CONSTRAINT fk_emp
+FOREIGN KEY(issued_book_isbn)
+REFERENCES books(isbn);
+
+ALTER TABLE issued_status
+ADD CONSTRAINT fk_employee
+FOREIGN KEY (issued_emp_id)
+REFERENCES employees(emp_id);
+
+ALTER TABLE employees 
+ADD CONSTRAINT fk_branch
+FOREIGN KEY(branch_id)
+REFERENCES branch(branch_id);
+
+ALTER TABLE return_status
+ADD CONSTRAINT fk_issued
+FOREIGN KEY(issued_id)
+REFERENCES issued_status(issued_id);
 ```
 
 ### 2. CRUD Operations
